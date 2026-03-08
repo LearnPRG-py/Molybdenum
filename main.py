@@ -27,7 +27,8 @@ where dependency rolls frequently invalidate expectation images.
 
 # --------------------- Currently supported components -------------------------
 supported_repos = ["chromium"]
-suite_folder_mapping = {"pdf_unittests": "pdf/test/data"}
+suite_folder_mapping = {"pdf_unittests": "pdf/test/data", 
+                        "molybdenum_autotests":"testing"}
 supported_test_classes = suite_folder_mapping.keys()
 # --------------------- Main Script --------------------------------------------
 
@@ -43,8 +44,14 @@ except ModuleNotFoundError:
     # Python < 3.11
     import tomli as tomllib
 
+running_tests = False
+
+def set_running_tests():
+    global running_tests
+    running_tests = True
+
 # ------------------------------ Helpers ---------------------------------------
-def configure():
+def _configure():
     config_file = open("savedata.toml", "w")
     repo = input("Enter the name of the repo you are performing the roll in: ")
     if repo not in supported_repos:
@@ -92,7 +99,7 @@ def configure():
     config_file.close()
 
 
-def get_logs():
+def _get_logs():
     print("\n" * 20)
     print(
         "To get the error log, find the failing test suite and paste the error \
@@ -101,7 +108,13 @@ def get_logs():
     print(
         "The test suites currently supported are:", list(supported_test_classes)
     )
-    test_suite = input("Enter the name of the test suite: ")
+    if not running_tests:
+        test_suite = input("Enter the name of the test suite: ")
+        if not (test_suite in supported_test_classes):
+            print("This test suite is not supported yet. File an issue for \
+                support. Thanks!")
+    else:
+        test_suite = "molybdenum_autotests"
     print("\n" * 2)
     print("Opening logs.txt: ")
     with open("logs.txt", "w") as f:
@@ -126,40 +139,7 @@ def get_logs():
 
     return error_log, test_suite, count
 
-
-# ------------------------------------------------------------------------------
-
-
-# ------------------------------- Main -----------------------------------------
-def main():
-    with open("savedata.toml", "rb") as f:
-        config = tomllib.load(f)
-
-    print(
-        "  __  __     _      _        _                    \n \
-  |  \/  |___| |_  _| |__  __| |___ _ _ _  _ _ __  \n \
-  | |\/| / _ \ | || | '_ \/ _` / -_) ' \ || | '  \ \n \
-  |_|  |_\___/_|\_, |_.__/\__,_\___|_||_\_,_|_|_|_| \n \
-              |__/                               "
-    )
-
-    print("Loading Molybdenum with config: ", config)
-
-    change_config = not (
-        input("Would you like to go ahead with this configuration?").lower()
-        == "y"
-    )
-
-    if change_config:
-        configure()
-        with open("savedata.toml", "rb") as f:
-            config = tomllib.load(f)
-        print("Loading Molybdenum with config: ", config)
-        if input("Press enter to continue or exit to quit.") == "exit":
-            quit()
-
-    error_log, test_suite, count = get_logs()
-
+def update_images(error_log, test_suite, count, config):
     lines = error_log.splitlines()
     processed_count = 0
     for i, line in enumerate(lines):
@@ -187,11 +167,50 @@ def main():
                     + "/"
                     + str(count)
                     + "] - "
-                    + img_name
+                    + img_name, end="\r"
                 )
 
     print("Process complete with: " + str(count) + " image differences fixed!")
+    
+def load_config():
+    with open("savedata.toml", "rb") as f:
+        config = tomllib.load(f)
 
+    print(
+        "  __  __     _      _        _                    \n \
+  |  \/  |___| |_  _| |__  __| |___ _ _ _  _ _ __  \n \
+  | |\/| / _ \ | || | '_ \/ _` / -_) ' \ || | '  \ \n \
+  |_|  |_\___/_|\_, |_.__/\__,_\___|_||_\_,_|_|_|_| \n \
+              |__/                               "
+    )
+
+    print("Loading Molybdenum with config: ", config)
+
+    if not running_tests:
+        change_config = not (
+            input("Would you like to go ahead with this configuration?").lower()
+            == "y"
+        )
+    else: change_config = False
+
+    if change_config:
+        _configure()
+        with open("savedata.toml", "rb") as f:
+            config = tomllib.load(f)
+        print("Loading Molybdenum with config: ", config)
+        if not running_tests:
+            if input("Press enter to continue or exit to quit.") == "exit":
+                quit()
+    return config
+
+# ------------------------------------------------------------------------------
+
+
+# ------------------------------- Main -----------------------------------------
+def _main():
+    config = load_config()
+    error_log, test_suite, count = _get_logs()
+    update_images(error_log, test_suite, count, config)
 
 if __name__ == "__main__":
-    main()
+    _main()

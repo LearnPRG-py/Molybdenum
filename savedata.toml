@@ -1,5 +1,5 @@
 # Setting for which repo you are performing the "roll" in. 
- repo = "chromium"
+repo = "chromium"
 
 # Where that repository is present
 directory = "/Users/aryankrishnan/chromium/src"
