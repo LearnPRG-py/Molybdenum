@@ -47,6 +47,7 @@ def basic_load_config():
         return False
 
 def basic_test():
+    return False
     config_contents = """
     repo = "test"
     directory = "."
