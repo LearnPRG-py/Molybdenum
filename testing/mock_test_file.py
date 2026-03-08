@@ -1,10 +1,19 @@
-import tests
-jeff_actual_base64 = tests.base64_encode("actual/jeff.png")
-chromium_actual_base64 = tests.base64_encode("actual/chromium.png")
+import test_helpers
+
+jeff_actual_base64 = test_helpers.base64_encode("testing/actual/jeff.png")
+chromium_actual_base64 = test_helpers.base64_encode(
+    "testing/actual/chromium.png"
+)
+
 
 def run_test():
-    if not (tests.base64_encode("jeff.png") == jeff_actual_base64):
+    if not (
+        test_helpers.base64_encode("testing/jeff.png") == jeff_actual_base64
+    ):
         return False
-    if not (tests.base64_encode("chromium.png") == chromium_actual_base64):
+    if not (
+        test_helpers.base64_encode("testing/chromium.png")
+        == chromium_actual_base64
+    ):
         return False
     return True

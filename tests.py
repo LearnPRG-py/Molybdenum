@@ -6,30 +6,12 @@ import main
 
 sys.path.insert(0, "testing")
 import mock_test_file
+import test_helpers
 
 main.set_running_tests()
 
 # Add Test Name Here
 tests = ["basic_load_config()", "basic_test()"]
-
-# Helpers
-def pre_tests():
-    os.system("cp savedata.toml savedatacopy.toml")
-    os.system("cp -r testing testing_backup")
-
-def cleanup(exit_code):
-    os.system("mv savedatacopy.toml savedata.toml")
-    os.system("mv testing_backup testing")
-    quit(exit_code)
-    
-def base64_encode(img_path):
-    with open(img_path, "rb") as i:
-        contents = i.read()
-    return base64.b64encode(contents)
-
-def write_config(config_file_contents):
-    with open("savedata.toml", "w") as f:
-        f.write(config_file_contents)
 
 # Tests
 def basic_load_config():
@@ -38,7 +20,7 @@ def basic_load_config():
     directory = "."
     supervision_level = 0
     """
-    write_config(config_contents)
+    test_helpers.write_config(config_contents)
     config = main.load_config()
     expected = {"repo": "test", "directory": ".", "supervision_level": 0}
     if config == expected:
@@ -46,13 +28,14 @@ def basic_load_config():
     else:
         return False
 
+
 def basic_test():
     config_contents = """
     repo = "test"
     directory = "."
     supervision_level = 0
     """
-    write_config(config_contents)
+    test_helpers.write_config(config_contents)
     config = main.load_config()
     expected = {"repo": "test", "directory": ".", "supervision_level": 0}
     if config != expected:
@@ -67,19 +50,23 @@ def basic_test():
     count = log.count("Actual pixels (open in browser):")
     main.update_images(log, "molybdenum_autotests", count, config)
     elapsed = time.time() - start
-    print(f"Time taken: {elapsed:.4f}s")
-    if elapsed > 0.1:
-        print("Warning: 2 Images took > 0.1s. Consider optimising code.")
+    print(f"Time taken: {elapsed:.6f}s")
+    if elapsed > 0.01:
+        print("Warning: 2 Images took > 0.01s. Consider optimising code.")
     test_passed = mock_test_file.run_test()
     if not test_passed:
         # Test should now pass after images are updated
         return False
 
-pre_tests()
-fail = False
-for i in tests:
-    if eval(i) == False:
-        print("Test "+i+" failed!")
-        fail = True
+try:
+    test_helpers.pre_tests()
+    fail = False
+    for i in tests:
+        if eval(i) == False:
+            print("Test " + i + " failed!")
+            fail = True
 
-cleanup(1 if fail else 0)
+    test_helpers.cleanup(1 if fail else 0)
+except Exception as e:
+    print("Fatal error " + str(e) + "\n Cleaning up")
+    test_helpers.cleanup(1)

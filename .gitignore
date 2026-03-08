@@ -182,3 +182,8 @@ cython_debug/
 
 # MacOS Metadata files
 **/.DS_Store
+
+# Repo Specific Files
+savedata.toml
+savedatacopy.toml
+testing_backup
