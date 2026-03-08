@@ -1,8 +1,9 @@
+
 # Molybdenum
 
 Automated expectation updater for pixel tests.
 
-**Molybdenum** parses failing test logs, extracts base64-encoded *Actual pixel outputs*, decodes them, and writes updated expectation images directly into your repository.
+**Molybdenum** parses failing test logs, extracts base64-encoded *Actual pixel outputs* , decodes them, and writes updated expectation images directly into your repository.
 
 No more manually copying base64 blobs or hunting through test directories.
 
@@ -32,6 +33,7 @@ Paste the logs once and the expectation images update automatically.
 * Decodes PNG images automatically
 * Writes images to the correct expectation directories
 * Handles dozens or hundreds of failures instantly
+* ~0.1ms per image — a 6000 image roll completes in under a second
 
 ## Example
 
@@ -55,25 +57,43 @@ All images are written directly to the repository and ready for commit.
 
 ## Usage
 
-### 1. Run your tests
+### 1. Install dependencies
 
-Run the test suite and locate the failing logs.
-
-### 2. Start Molybdenum
-
+```bash
+./install.sh
 ```
+
+### 2. Run your tests
+
+Run the test suite on Chromium and locate the failing logs.
+
+### 3. Start Molybdenum
+
+```bash
+./molyb
+```
+
+Or directly:
+
+```bash
 python3 main.py
 ```
 
-### 3. Paste logs
+### 4. Paste logs
 
-Molybdenum will open `logs.txt`.
+Molybdenum will open `logs.txt`. Paste the failing test output and save the file.
 
-Paste the failing test output and save the file.
-
-### 4. Update expectations
+### 5. Update expectations
 
 Press enter and Molybdenum will automatically decode and write all updated expectation images.
+
+### Configuration
+
+To run the configuration wizard:
+
+```bash
+./molyb --config
+```
 
 ## Supported Repositories
 
@@ -87,11 +107,12 @@ Test suites:
 
 Support for additional repositories and test suites can be added easily, and is in progress.
 
-In-Progress additions:
- - Chromium, Blink Unittests
- - PDFium, PDFium Embeddertests
+In-progress additions:
 
-Issues can be filed to request support for any other test suites in any chromium or it's sub-repos.
+* Chromium, Blink Unittests
+* PDFium, PDFium Embeddertests
+
+Issues can be filed to request support for any other test suites in Chromium or its sub-repos.
 
 ## Configuration
 
@@ -103,7 +124,7 @@ savedata.toml
 
 Example:
 
-```
+```toml
 repo = "chromium"
 directory = "/path/to/chromium/src"
 supervision_level = 0
@@ -111,23 +132,20 @@ supervision_level = 0
 
 ### Supervision Levels
 
-### This feature is not yet implimented
-... However, after it is implimented this is an approximate descriptor
+> ⚠️ This feature is not yet implemented. After implementation, supervision levels will work as follows:
 
-| Level | Behavior                       |
-| ----- | ------------------------------ |
-| 0     | Automatically update images    |
-| 1     | Review each image update       |
+| Level | Behavior                                             |
+| ----- | ---------------------------------------------------- |
+| 0     | Automatically update all images without confirmation |
+| 1     | Review each image with a visual diff before writing  |
 
 ## Why the name?
 
-**Molybdenum (Mo)** sits next to **Chromium (Cr)** on the periodic table.
+**Molybdenum (Mo, element 42)** sits directly below **Chromium (Cr, element 24)** in Group 6 of the periodic table — same group, next period down.
 
-Molybdenum is often used as a support material in industrial chemistry, 
-it makes other reactions work better without being the star of the show.
-Which is exactly what this tool does, it supports Chromium development without being part of Chromium itself.
+Molybdenum is often used as a support material in industrial chemistry — it makes other reactions work better without being the star of the show. Which is exactly what this tool does: it supports Chromium development without being part of Chromium itself.
 
-In steel alloys, Molybdenum strengthens and stabilizes — again, the tool stabilizes your test suite after a roll destabilizes it.
+In steel alloys, Molybdenum strengthens and stabilizes — fitting, since this tool stabilizes your test suite after a roll destabilizes it.
 
 ## Status
 

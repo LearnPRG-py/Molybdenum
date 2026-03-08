@@ -34,10 +34,16 @@ suite_folder_mapping = {
 supported_test_classes = suite_folder_mapping.keys()
 # --------------------- Main Script --------------------------------------------
 
+import argparse
 import base64
 import os
 import platform
 import subprocess
+
+parser = argparse.ArgumentParser(description="Molybdenum - chromium automated expectation updater")
+parser.add_argument("--config", action="store_true", help="Run the configuration wizard")
+args = parser.parse_args()
+
 
 try:
     # Python > 3.11
@@ -47,7 +53,10 @@ except ModuleNotFoundError:
     import tomli as tomllib
 
 running_tests = False
+change_config = False
 
+if args.config:
+    change_config = True
 
 def set_running_tests():
     global running_tests
@@ -101,7 +110,6 @@ def _configure():
     )
     config_file.write(file)
     config_file.close()
-
 
 def _get_logs():
     print("\n" * 20)
@@ -199,14 +207,6 @@ def load_config():
 
     print("Loading Molybdenum with config: ", config)
 
-    if not running_tests:
-        change_config = not (
-            input("Would you like to go ahead with this configuration?").lower()
-            == "y"
-        )
-    else:
-        change_config = False
-
     if change_config:
         _configure()
         with open("savedata.toml", "rb") as f:
@@ -223,6 +223,7 @@ def load_config():
 
 # ------------------------------- Main -----------------------------------------
 def _main():
+    print("Running molyb, edit savedata.toml or call with --config to configure.")
     config = load_config()
     error_log, test_suite, count = _get_logs()
     update_images(error_log, test_suite, count, config)
