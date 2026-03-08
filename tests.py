@@ -50,20 +50,23 @@ def basic_test():
     count = log.count("Actual pixels (open in browser):")
     main.update_images(log, "molybdenum_autotests", count, config)
     elapsed = time.time() - start
-    print(f"Time taken: {elapsed:.4f}s")
-    if elapsed > 0.1:
-        print("Warning: 2 Images took > 0.1s. Consider optimising code.")
+    print(f"Time taken: {elapsed:.6f}s")
+    if elapsed > 0.01:
+        print("Warning: 2 Images took > 0.01s. Consider optimising code.")
     test_passed = mock_test_file.run_test()
     if not test_passed:
         # Test should now pass after images are updated
         return False
 
+try:
+    test_helpers.pre_tests()
+    fail = False
+    for i in tests:
+        if eval(i) == False:
+            print("Test " + i + " failed!")
+            fail = True
 
-test_helpers.pre_tests()
-fail = False
-for i in tests:
-    if eval(i) == False:
-        print("Test " + i + " failed!")
-        fail = True
-
-test_helpers.cleanup(1 if fail else 0)
+    test_helpers.cleanup(1 if fail else 0)
+except Exception as e:
+    print("Fatal error " + str(e) + "\n Cleaning up")
+    test_helpers.cleanup(1)
