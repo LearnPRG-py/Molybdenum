@@ -1,0 +1,12 @@
+This is some context to set the stage in this mock test environment.
+The latest commit updated a dependency of some kind that fixed incorrect
+shifting in images and removed rogue pixels, however the expectation images
+do not recognize and still remain tied to the old behaviour.
+
+The two example tests images here are jeff.png and chromium.png.
+
+The actual folder represents the actual files rendered by the software, while 
+jeff.png and chromium.png outside this actual folder represents the expectation
+images present. The log.txt represents a "fake log" of sorts to test the app.
+
+The goal is to have tests.py update the images here.

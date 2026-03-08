@@ -1,0 +1,11 @@
+# Setting for which repo you are performing the "roll" in. 
+repo = "chromium"
+
+# Where that repository is present
+directory = "/Users/aryankrishnan/chromium/src"
+
+# Supervision level determines how updates work:
+# 0. No supervision: Just writes images to your git worktree, but you can revert if needed
+# 1. Confirm at the end: Confirms updates at the end of processing and prior to writes
+# 2. Confirms for each individual image with a visual difference shown.
+supervision_level = 0

@@ -28,6 +28,7 @@ def basic_load_config():
     else:
         return False
 
+
 def basic_test():
     config_contents = """
     repo = "test"
@@ -57,11 +58,12 @@ def basic_test():
         # Test should now pass after images are updated
         return False
 
+
 test_helpers.pre_tests()
 fail = False
 for i in tests:
     if eval(i) == False:
-        print("Test "+i+" failed!")
+        print("Test " + i + " failed!")
         fail = True
 
 test_helpers.cleanup(1 if fail else 0)

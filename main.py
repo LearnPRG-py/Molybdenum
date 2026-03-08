@@ -27,8 +27,10 @@ where dependency rolls frequently invalidate expectation images.
 
 # --------------------- Currently supported components -------------------------
 supported_repos = ["chromium"]
-suite_folder_mapping = {"pdf_unittests": "pdf/test/data", 
-                        "molybdenum_autotests":"testing"}
+suite_folder_mapping = {
+    "pdf_unittests": "pdf/test/data",
+    "molybdenum_autotests": "testing",
+}
 supported_test_classes = suite_folder_mapping.keys()
 # --------------------- Main Script --------------------------------------------
 
@@ -46,9 +48,11 @@ except ModuleNotFoundError:
 
 running_tests = False
 
+
 def set_running_tests():
     global running_tests
     running_tests = True
+
 
 # ------------------------------ Helpers ---------------------------------------
 def _configure():
@@ -111,8 +115,10 @@ def _get_logs():
     if not running_tests:
         test_suite = input("Enter the name of the test suite: ")
         if not (test_suite in supported_test_classes):
-            print("This test suite is not supported yet. File an issue for \
-                support. Thanks!")
+            print(
+                "This test suite is not supported yet. File an issue for \
+                support. Thanks!"
+            )
     else:
         test_suite = "molybdenum_autotests"
     print("\n" * 2)
@@ -139,6 +145,7 @@ def _get_logs():
 
     return error_log, test_suite, count
 
+
 def update_images(error_log, test_suite, count, config):
     lines = error_log.splitlines()
     processed_count = 0
@@ -149,8 +156,12 @@ def update_images(error_log, test_suite, count, config):
                 base64_line = lines[i + 1]
                 # Image name always remains 6 lines after the "Actual pixels"
                 # line.
-                img_name_line = lines[i + 6]
-                img_name = img_name_line.split("(Reference: ")[1].split(")")[0]
+                for j in range(i + 1, min(i + 10, len(lines))):
+                    if "(Reference: " in lines[j]:
+                        img_name = (
+                            lines[j].split("(Reference: ")[1].split(")")[0]
+                        )
+                        break
                 prefix = "data:image/png;base64,"
                 base64_data = base64_line.removeprefix(prefix)
                 image_bytes = base64.b64decode(base64_data)
@@ -167,11 +178,13 @@ def update_images(error_log, test_suite, count, config):
                     + "/"
                     + str(count)
                     + "] - "
-                    + img_name, end="\r"
+                    + img_name,
+                    end="\r",
                 )
 
     print("Process complete with: " + str(count) + " image differences fixed!")
-    
+
+
 def load_config():
     with open("savedata.toml", "rb") as f:
         config = tomllib.load(f)
@@ -191,7 +204,8 @@ def load_config():
             input("Would you like to go ahead with this configuration?").lower()
             == "y"
         )
-    else: change_config = False
+    else:
+        change_config = False
 
     if change_config:
         _configure()
@@ -203,6 +217,7 @@ def load_config():
                 quit()
     return config
 
+
 # ------------------------------------------------------------------------------
 
 
@@ -211,6 +226,7 @@ def _main():
     config = load_config()
     error_log, test_suite, count = _get_logs()
     update_images(error_log, test_suite, count, config)
+
 
 if __name__ == "__main__":
     _main()
