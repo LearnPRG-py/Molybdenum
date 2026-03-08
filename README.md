@@ -111,11 +111,13 @@ supervision_level = 0
 
 ### Supervision Levels
 
+### This feature is not yet implimented
+... However, after it is implimented this is an approximate descriptor
+
 | Level | Behavior                       |
 | ----- | ------------------------------ |
 | 0     | Automatically update images    |
-| 1     | Confirm updates before writing |
-| 2     | Review each image update       |
+| 1     | Review each image update       |
 
 ## Why the name?
 
@@ -129,7 +131,7 @@ In steel alloys, Molybdenum strengthens and stabilizes — again, the tool stabi
 
 ## Status
 
-Early beta — built to simplify expectation updates during dependency rolls.
+Beta — built to simplify expectation updates during dependency rolls.
 
 ## License
 
