@@ -115,6 +115,12 @@ supervision_level = 0
 
 **Molybdenum (Mo)** sits next to **Chromium (Cr)** on the periodic table.
 
+Molybdenum is often used as a support material in industrial chemistry, 
+it makes other reactions work better without being the star of the show.
+Which is exactly what this tool does, it supports Chromium development without being part of Chromium itself.
+
+In steel alloys, Molybdenum strengthens and stabilizes — again, the tool stabilizes your test suite after a roll destabilizes it.
+
 ## Status
 
 Early beta — built to simplify expectation updates during dependency rolls.
