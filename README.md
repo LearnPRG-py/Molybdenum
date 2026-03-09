@@ -133,8 +133,6 @@ supervision_level = 0
 
 ### Supervision Levels
 
-> ⚠️ This feature is not yet implemented. After implementation, supervision levels will work as follows:
-
 | Level | Behavior                                             |
 | ----- | ---------------------------------------------------- |
 | 0     | Automatically update all images without confirmation |
