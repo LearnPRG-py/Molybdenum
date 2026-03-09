@@ -1,4 +1,3 @@
-
 # Molybdenum
 
 Automated expectation updater for pixel tests.
@@ -67,7 +66,17 @@ All images are written directly to the repository and ready for commit.
 
 Run the test suite on Chromium and locate the failing logs.
 
-### 3. Start Molybdenum
+### 3. Configuration
+
+To run the configuration wizard:
+
+```bash
+./molyb --config
+```
+
+Refer to the configuration section for more details
+
+### 4. Start Molybdenum
 
 ```bash
 ./molyb
@@ -79,23 +88,15 @@ Or directly:
 python3 main.py
 ```
 
-### 4. Paste logs
+### 5. Paste logs
 
 Molybdenum will open `logs.txt`. Paste the failing test output and save the file.
 
-### 5. Update expectations
+### 6. Update expectations
 
 Press enter and Molybdenum will automatically decode and write all updated expectation images.
 
-### Configuration
-
-To run the configuration wizard:
-
-```bash
-./molyb --config
-```
-
-## Supported Repositories
+### Supported Repositories
 
 Currently supported:
 
