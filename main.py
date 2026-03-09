@@ -40,8 +40,12 @@ import os
 import platform
 import subprocess
 
-parser = argparse.ArgumentParser(description="Molybdenum - chromium automated expectation updater")
-parser.add_argument("--config", action="store_true", help="Run the configuration wizard")
+parser = argparse.ArgumentParser(
+    description="Molybdenum - chromium automated expectation updater"
+)
+parser.add_argument(
+    "--config", action="store_true", help="Run the configuration wizard"
+)
 args = parser.parse_args()
 
 
@@ -58,12 +62,29 @@ change_config = False
 if args.config:
     change_config = True
 
+
 def set_running_tests():
     global running_tests
     running_tests = True
 
 
 # ------------------------------ Helpers ---------------------------------------
+
+
+def open_file(file_path):
+    if platform.system() == "Windows":
+        os.startfile(file_path)
+    elif platform.system() == "Darwin":  # macOS
+        subprocess.run(["open", file_path])
+    else:  # Linux
+        subprocess.run(["xdg-open", file_path])
+
+
+def write_to_image(output, image_bytes):
+    with open(output, "wb") as f:
+        f.write(image_bytes)
+
+
 def _configure():
     config_file = open("savedata.toml", "w")
     repo = input("Enter the name of the repo you are performing the roll in: ")
@@ -79,14 +100,12 @@ def _configure():
         "Enter the directory of your chromium checkout (src folder)."
     )
     print("\n" * 5)
-    print(
-        "# Supervision level determines how updates work: \
+    print("# Supervision level determines how updates work: \
 # 0. No supervision: Just writes images to your git worktree, but you can \
 # revert if needed \
 # 1. Confirm at the end: Confirms updates at the end of processing and prior to\
 # writes \
-# 2. Confirms for each individual image with a visual difference shown."
-    )
+# 2. Confirms for each individual image with a visual difference shown.")
     supervision_level_str = input("Enter the supervision level (0, 1, 2)")
     try:
         if int(supervision_level_str) < 0 or int(supervision_level_str) > 2:
@@ -111,6 +130,7 @@ def _configure():
     config_file.write(file)
     config_file.close()
 
+
 def _get_logs():
     print("\n" * 20)
     print(
@@ -123,10 +143,8 @@ def _get_logs():
     if not running_tests:
         test_suite = input("Enter the name of the test suite: ")
         if not (test_suite in supported_test_classes):
-            print(
-                "This test suite is not supported yet. File an issue for \
-                support. Thanks!"
-            )
+            print("This test suite is not supported yet. File an issue for \
+                support. Thanks!")
     else:
         test_suite = "molybdenum_autotests"
     print("\n" * 2)
@@ -134,13 +152,7 @@ def _get_logs():
     with open("logs.txt", "w") as f:
         f.write("Paste logs here, save, and close the editor.")
 
-    if platform.system() == "Windows":
-        os.startfile("logs.txt")
-    elif platform.system() == "Darwin":  # macOS
-        subprocess.run(["open", "logs.txt"])
-    else:  # Linux
-        subprocess.run(["xdg-open", "logs.txt"])
-
+    open_file("logs.txt")
     input("Press Enter after saving logs.txt...")
 
     with open("logs.txt") as f:
@@ -156,6 +168,7 @@ def _get_logs():
 
 def update_images(error_log, test_suite, count, config):
     lines = error_log.splitlines()
+    allowlist = []
     processed_count = 0
     for i, line in enumerate(lines):
         if "Actual pixels (open in browser):" in line:
@@ -178,8 +191,33 @@ def update_images(error_log, test_suite, count, config):
                     suite_folder_mapping[test_suite],
                     img_name,
                 )
-                with open(output, "wb") as f:
-                    f.write(image_bytes)
+                if (config["supervision_level"] == 1) and not (
+                    img_name in allowlist
+                ):
+                    proceed = input(
+                        "Updating file "
+                        + img_name
+                        + " Press y to continue, n to skip image or s to show images"
+                    )
+                    if proceed.lower() == "y":
+                        write_to_image(output, image_bytes)
+                        allowlist.append(img_name)
+                    elif proceed.lower() == "n":
+                        pass
+                    else:
+                        os.system("cp " + output + " old.png")
+                        with open("new.png", "wb") as f:
+                            f.write(image_bytes)
+                        open_file("old.png")
+                        open_file("new.png")
+                        proceed = input("Replace image? (y/n)")
+                        if proceed == "y":
+                            write_to_image(output, image_bytes)
+                            allowlist.append(img_name)
+                        else:
+                            pass
+                else:
+                    write_to_image(output, image_bytes)
                 print(
                     "["
                     + str(processed_count)
@@ -190,20 +228,20 @@ def update_images(error_log, test_suite, count, config):
                     end="\r",
                 )
 
-    print("Process complete with: " + str(count) + " image differences fixed!")
+    print(
+        "Process complete with: " + str(count) + " image differences addressed!"
+    )
 
 
 def load_config():
     with open("savedata.toml", "rb") as f:
         config = tomllib.load(f)
 
-    print(
-        "  __  __     _      _        _                    \n \
+    print("  __  __     _      _        _                    \n \
   |  \/  |___| |_  _| |__  __| |___ _ _ _  _ _ __  \n \
   | |\/| / _ \ | || | '_ \/ _` / -_) ' \ || | '  \ \n \
   |_|  |_\___/_|\_, |_.__/\__,_\___|_||_\_,_|_|_|_| \n \
-              |__/                               "
-    )
+              |__/                               ")
 
     print("Loading Molybdenum with config: ", config)
 
@@ -223,7 +261,9 @@ def load_config():
 
 # ------------------------------- Main -----------------------------------------
 def _main():
-    print("Running molyb, edit savedata.toml or call with --config to configure.")
+    print(
+        "Running molyb, edit savedata.toml or call with --config to configure."
+    )
     config = load_config()
     error_log, test_suite, count = _get_logs()
     update_images(error_log, test_suite, count, config)
