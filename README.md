@@ -110,7 +110,6 @@ Support for additional repositories and test suites can be added easily, and is 
 
 In-progress additions:
 
-* Chromium, Blink Unittests
 * PDFium, PDFium Embeddertests
 
 Issues can be filed to request support for any other test suites in Chromium or its sub-repos.
