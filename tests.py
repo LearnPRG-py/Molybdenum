@@ -13,6 +13,7 @@ main.set_running_tests()
 # Add Test Name Here
 tests = ["basic_load_config()", "basic_test()"]
 
+
 # Tests
 def basic_load_config():
     config_contents = """
@@ -57,6 +58,7 @@ def basic_test():
     if not test_passed:
         # Test should now pass after images are updated
         return False
+
 
 try:
     test_helpers.pre_tests()
