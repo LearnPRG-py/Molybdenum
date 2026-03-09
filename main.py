@@ -100,12 +100,14 @@ def _configure():
         "Enter the directory of your chromium checkout (src folder)."
     )
     print("\n" * 5)
-    print("# Supervision level determines how updates work: \
+    print(
+        "# Supervision level determines how updates work: \
 # 0. No supervision: Just writes images to your git worktree, but you can \
 # revert if needed \
 # 1. Confirm at the end: Confirms updates at the end of processing and prior to\
 # writes \
-# 2. Confirms for each individual image with a visual difference shown.")
+# 2. Confirms for each individual image with a visual difference shown."
+    )
     supervision_level_str = input("Enter the supervision level (0, 1, 2)")
     try:
         if int(supervision_level_str) < 0 or int(supervision_level_str) > 2:
@@ -143,8 +145,10 @@ def _get_logs():
     if not running_tests:
         test_suite = input("Enter the name of the test suite: ")
         if not (test_suite in supported_test_classes):
-            print("This test suite is not supported yet. File an issue for \
-                support. Thanks!")
+            print(
+                "This test suite is not supported yet. File an issue for \
+                support. Thanks!"
+            )
     else:
         test_suite = "molybdenum_autotests"
     print("\n" * 2)
@@ -237,11 +241,13 @@ def load_config():
     with open("savedata.toml", "rb") as f:
         config = tomllib.load(f)
 
-    print("  __  __     _      _        _                    \n \
+    print(
+        "  __  __     _      _        _                    \n \
   |  \/  |___| |_  _| |__  __| |___ _ _ _  _ _ __  \n \
   | |\/| / _ \ | || | '_ \/ _` / -_) ' \ || | '  \ \n \
   |_|  |_\___/_|\_, |_.__/\__,_\___|_||_\_,_|_|_|_| \n \
-              |__/                               ")
+              |__/                               "
+    )
 
     print("Loading Molybdenum with config: ", config)
 
